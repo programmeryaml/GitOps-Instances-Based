@@ -15,13 +15,6 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
-      - name: Test with Checkov
-        id: checkov-test
-        uses: bridgecrewio/checkov-action@master
-        with:
-          directory: staging/ap-southasia-1/staging
-          framework: terraform
-      
       - name: Install checkov
         run: pip install checkov
 
@@ -32,11 +25,21 @@ jobs:
           checkov -d staging/ap-southasia-1/staging --output sarif --framework terraform > ${{ github.workspace }}/results.sarif
           echo "::set-output name=checkov-output::$(cat ${{ github.workspace }}/results.sarif)"
 
+      - name: Adjust file permissions
+        run: |
+          chmod 644 ${{ github.workspace }}/results.sarif
+
+      - name: Extract specific results
+        id: extract-results
+        run: |
+          grep "Check:" ${{ github.workspace }}/results.sarif > ${{ github.workspace }}/filtered-results.txt
+          echo "::set-output name=filtered-results::$(cat ${{ github.workspace }}/filtered-results.txt)"
+
       - name: Comment on pull request
         uses: actions/github-script@v4
         with:
           script: |
-            const output = `Checkov scan results:\n\n${process.env.checkov_output}`;
+            const output = `Checkov scan results:\n\n${process.env.filtered_results}`;
             github.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,

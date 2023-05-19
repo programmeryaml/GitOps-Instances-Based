@@ -29,8 +29,8 @@ jobs:
         id: checkov
         run: |
           echo "running checkov on directory: staging/ap-southasia-1/staging"
-          checkov -d staging/ap-southasia-1/staging --output sarif --framework terraform > results.sarif
-          echo "::set-output name=checkov-output::$(cat results.sarif)"
+          checkov -d staging/ap-southasia-1/staging --output sarif --framework terraform > ${{ github.workspace }}/results.sarif
+          echo "::set-output name=checkov-output::$(cat ${{ github.workspace }}/results.sarif)"
 
       - name: Comment on pull request
         uses: actions/github-script@v4

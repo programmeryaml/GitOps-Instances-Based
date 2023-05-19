@@ -35,7 +35,7 @@ jobs:
       uses: actions/github-script@v2.1.0
       if: github.event_name == 'pull_request' && (success() || failure())
       with:
-        github-token: ${{ secrets.CHECKOV_TOKEN }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const output = #### Checkov 🧪\`${{ steps.checkov.outcome }}\`
 

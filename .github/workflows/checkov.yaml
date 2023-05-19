@@ -20,23 +20,16 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with:
           directory: staging/ap-southasia-1/staging
-          framework: terraform 
-          
-      - name: Run Checkov and capture output
-        id: checkov-run
-        run: |
-          echo "running checkov on directory: staging/ap-southasia-1/staging"
-          checkov -d staging/ap-southasia-1/staging --output sarif --framework terraform
-          echo "::set-output name=checkov-output::$(cat results.sarif)"
-
-      - name: Comment on pull request
-        uses: actions/github-script@v4
+          framework: terraform
+      
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v2
+        
+        # Results are generated only on a success or failure
+        # this is required since GitHub by default won't run the next step
+        # when the previous one has failed. Security checks that do not pass will 'fail'.
+        # An alternative is to add `continue-on-error: true` to the previous step
+        # Or 'soft_fail: true' to checkov.
+        if: success() || failure()
         with:
-          script: |
-            const output = `Checkov scan results:\n\n${process.env.checkov_output}`;
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            });
+          sarif_file: results.sarif

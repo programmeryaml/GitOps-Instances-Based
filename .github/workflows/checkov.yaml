@@ -16,14 +16,14 @@ jobs:
         with:
           python-version: 3.8
       - name: Test with Checkov
-        id: checkov
+        id: checkov-test
         uses: bridgecrewio/checkov-action@master
         with:
           directory: staging/ap-southasia-1/staging
           framework: terraform 
           
       - name: Run Checkov and capture output
-        id: checkov
+        id: checkov-run
         run: |
           echo "running checkov on directory: staging/ap-southasia-1/staging"
           checkov -d staging/ap-southasia-1/staging --output sarif --framework terraform

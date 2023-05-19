@@ -31,11 +31,11 @@ jobs:
         soft_fail: false
     
     # Add a comment to pull requests with plan results
-    - name: add-plan-comment
-      id: comment
-      uses: actions/github-script@v3
+    - name: GitHub Script
+      uses: actions/github-script@v2.1.0
       if: github.event_name == 'pull_request' && (success() || failure())
       with:
+        github-token: ${{ secrets.CHECKOV_TOKEN }}
         script: |
           const output = #### Checkov 🧪\`${{ steps.checkov.outcome }}\`
 

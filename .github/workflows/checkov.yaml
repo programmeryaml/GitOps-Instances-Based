@@ -1,5 +1,5 @@
----
-name: Checkov IaC Scanning
+name: 'Checkov IaC Scanning'
+
 on:
   pull_request:
     branches:
@@ -7,44 +7,50 @@ on:
     paths:
       - 'staging/ap-southasia-1/staging/*'
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+
 jobs:
-  build:
+  checkov:
+    name: 'checkov'
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
-      - name: Test with Checkov
-        id: checkov
-        uses: bridgecrewio/checkov-action@master
-        with:
-          quiet: true
-          framework: terraform
-          container_user: 1000
-          output_format: github_failed_only
-          soft_fail: false
-          
-      - name: add-plan-comment
-        id: comment
-        uses: actions/github-script@v3
-        if: github.event_name == 'pull_request' && (success() || failure())
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            #### Checkov 🧪\`${{ steps.checkov.outcome }}\`
-      
-            <details><summary>Show Checkov Results</summary>
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
 
-            ${process.env.CHECKOV_RESULTS}
+    # Run Checkov against configuration
+    - name: Checkov
+      if: github.event_name == 'pull_request'
+      id: checkov
+      uses: bridgecrewio/checkov-action@master
+      with:
+        quiet: true
+        framework: terraform
+        container_user: 1000
+        output_format: github_failed_only
+        soft_fail: false
+    
+    # Add a comment to pull requests with plan results
+    - name: add-plan-comment
+      id: comment
+      uses: actions/github-script@v3
+      if: github.event_name == 'pull_request' && (success() || failure())
+      env:
+        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = #### Checkov 🧪\`${{ steps.checkov.outcome }}\`
 
-            </details>
-            
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
+          <details><summary>Show Checkov Results</summary>
+
+          ${process.env.CHECKOV_RESULTS}
+
+          </details>
+                      
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })

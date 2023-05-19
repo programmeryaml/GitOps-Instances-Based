@@ -23,6 +23,7 @@ jobs:
         run: |
           echo "running checkov on directory: staging/ap-southasia-1/staging"
           checkov -d staging/ap-southasia-1/staging --output sarif --framework terraform > ${{ github.workspace }}/results.sarif
+          cat ${{ github.workspace }}/results.sarif
           echo "::set-output name=checkov-output::$(cat ${{ github.workspace }}/results.sarif)"
 
       - name: Adjust file permissions

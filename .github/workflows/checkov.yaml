@@ -33,12 +33,12 @@ jobs:
     # Add a comment to pull requests with plan results
     - name: add-plan-comment
       id: comment
-      uses: actions/github-script@v3
+      uses: actions/github-script@v2
       if: github.event_name == 'pull_request' && (success() || failure())
       env:
         PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
           const output = #### Checkov 🧪\`${{ steps.checkov.outcome }}\`
 

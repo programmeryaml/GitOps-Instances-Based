@@ -33,8 +33,6 @@ jobs:
     # Add a comment to pull requests with plan results
     - name: Run GitHub Script
       uses: actions/github-script@v2.1.0
-      env:
-          GITHUB_TOKEN: ${{ secrets.CHECKOV_TOKEN }}
       with:
         script: |
           const output = #### Checkov 🧪\`${{ steps.checkov.outcome }}\`

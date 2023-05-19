@@ -31,9 +31,8 @@ jobs:
         soft_fail: false
     
     # Add a comment to pull requests with plan results
-    - name: GitHub Script
+    - name: Run GitHub Script
       uses: actions/github-script@v2.1.0
-      if: github.event_name == 'pull_request' && (success() || failure())
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |

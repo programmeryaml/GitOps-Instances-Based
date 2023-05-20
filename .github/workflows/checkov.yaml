@@ -34,6 +34,7 @@ jobs:
     - name: Run GitHub Script
       uses: actions/github-script@v6
       with:
+        github-token: ${{ secrets.CHECKOV_TOKEN}}
         script: |
           const output = #### Checkov 🧪\`${{ steps.checkov.outcome }}\`
 

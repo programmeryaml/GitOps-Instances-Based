@@ -32,7 +32,7 @@ jobs:
     
     # Add a comment to pull requests with plan results
     - name: Run GitHub Script
-      uses: actions/github-script@v2.1.0
+      uses: actions/github-script@v6
       with:
         script: |
           const output = #### Checkov 🧪\`${{ steps.checkov.outcome }}\`

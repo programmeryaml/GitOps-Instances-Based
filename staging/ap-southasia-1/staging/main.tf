@@ -6,5 +6,3 @@ resource "aws_s3_bucket_acl" "example_bucket" {
   bucket = "your-bucket-name"
   acl    = "private"
 }
- 
-#test
